@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor Asistencia PTDAM - Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #e8eeff;
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8eeff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group.full {
+            grid-template-columns: 1fr;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #667eea;
+            color: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin: 10px 0;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+            display: block;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border: 1px solid #fca5a5;
+            display: block;
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .form-group {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Gestor Asistencia PTDAM</h1>
+            <p>Gestión online de asistencia - Versión Vercel con OCR</p>
+        </div>
+
+        <div class="content">
+            <div id="message" class="message"></div>
+
+            <!-- Estadísticas -->
+            <div class="stats">
+                <div class="stat-card">
+                    <p>Total Registros</p>
+                    <h3 id="totalRegistros">0</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Total Faltas</p>
+                    <h3 id="totalFaltas">0</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Tasa Asistencia</p>
+                    <h3 id="tasaAsistencia">0%</h3>
+                </div>
+            </div>
+
+            <!-- Subir PDF -->
+            <div class="section">
+                <h2>📤 Subir PDF de Asistencia</h2>
+                <div class="upload-area" id="uploadArea">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="upload-text">Arrastra y suelta tu PDF aquí</p>
+                    <p style="color: #999; margin-bottom: 20px;">o</p>
+                    <button class="btn btn-primary" id="browseBtn">Seleccionar archivo</button>
+                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                </div>
+                <div id="uploadProgress" style="display: none; margin-top: 20px;">
+                    <p>Procesando PDF... <span class="spinner"></span></p>
+                </div>
+            </div>
+
+            <!-- Agregar registro manual -->
+            <div class="section">
+                <h2>➕ Agregar Registro Manual</h2>
+                <div class="form-group">
+                    <div>
+                        <label>Nombre *</label>
+                        <input type="text" id="nombre" placeholder="Nombre completo">
+                    </div>
+                    <div>
+                        <label>Departamento *</label>
+                        <select id="departamento">
+                            <option value="">Seleccionar...</option>
+                            <option value="ENFERMERÍA">ENFERMERÍA</option>
+                            <option value="ABOGADO">ABOGADO</option>
+                            <option value="ADMINISTRACIÓN">ADMINISTRACIÓN</option>
+                            <option value="SEGURIDAD">SEGURIDAD</option>
+                            <option value="OTRO">OTRO</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Fecha *</label>
+                        <input type="date" id="fecha">
+                    </div>
+                    <div>
+                        <label>Hora Entrada</label>
+                        <input type="time" id="entrada">
+                    </div>
+                    <div>
+                        <label>Hora Salida</label>
+                        <input type="time" id="salida">
+                    </div>
+                    <div>
+                        <label>¿Festivo?</label>
+                        <select id="festivo">
+                            <option value="No">No</option>
+                            <option value="Sí">Sí</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>¿Falta?</label>
+                        <select id="falta">
+                            <option value="No">No</option>
+                            <option value="Sí">Sí</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <div>
+                        <label>Notas</label>
+                        <input type="text" id="notas" placeholder="Observaciones adicionales">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="agregarRegistro()">➕ Agregar Registro</button>
+            </div>
+
+            <!-- Tabla de registros -->
+            <div class="section">
+                <h2>📊 Registros de Asistencia</h2>
+                <div class="controls">
+                    <button class="btn btn-success" onclick="exportarExcel()">📊 Descargar Excel</button>
+                    <button class="btn btn-primary" onclick="cargarDatos()">🔄 Actualizar</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Departamento</th>
+                                <th>Fecha</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Festivo</th>
+                                <th>Falta</th>
+                                <th>Notas</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablebody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Gestor Asistencia PTDAM v1.1 | Vercel Edition con OCR | Desarrollado con ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        const API = '';
+
+        // Setup drag and drop
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+
+        browseBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                procesarPDF(e.target.files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                procesarPDF(e.dataTransfer.files[0]);
+            }
+        });
+
+        async function procesarPDF(file) {
+            if (file.type !== 'application/pdf') {
+                mostrarMensaje('❌ Solo se permiten archivos PDF', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    document.getElementById('uploadProgress').style.display = 'block';
+                    mostrarMensaje('Procesando PDF con OCR...', 'info');
+
+                    const pdfBase64 = e.target.result.split(',')[1];
+
+                    const response = await fetch(`${API}/api/procesar-pdf`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            pdfBase64: pdfBase64,
+                            fileName: file.name
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    document.getElementById('uploadProgress').style.display = 'none';
+
+                    if (data.success) {
+                        mostrarMensaje(`✅ ${data.message}`, 'success');
+                        cargarDatos();
+                        fileInput.value = '';
+                    } else {
+                        mostrarMensaje(`❌ Error: ${data.error}`, 'error');
+                    }
+                } catch (error) {
+                    document.getElementById('uploadProgress').style.display = 'none';
+                    mostrarMensaje(`❌ Error: ${error.message}`, 'error');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function cargarDatos() {
+            try {
+                const res = await fetch(`${API}/api/registros`);
+                const datos = await res.json();
+                mostrarTabla(datos);
+                actualizarEstadisticas(datos);
+            } catch (error) {
+                mostrarMensaje(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function mostrarTabla(datos) {
+            const tbody = document.getElementById('tablebody');
+            tbody.innerHTML = '';
+
+            datos.forEach(dato => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${dato.id}</td>
+                    <td>${dato.nombre}</td>
+                    <td>${dato.departamento}</td>
+                    <td>${dato.fecha || '-'}</td>
+                    <td>${dato.entrada || '-'}</td>
+                    <td>${dato.salida || '-'}</td>
+                    <td>${dato.festivo}</td>
+                    <td>${dato.falta}</td>
+                    <td>${dato.notas || '-'}</td>
+                    <td><button class="btn btn-danger" onclick="eliminarRegistro(${dato.id})">🗑️</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function actualizarEstadisticas(datos) {
+            const total = datos.length;
+            const faltas = datos.filter(d => d.falta === 'Sí').length;
+            const tasa = total > 0 ? ((total - faltas) / total * 100).toFixed(1) : 0;
+
+            document.getElementById('totalRegistros').textContent = total;
+            document.getElementById('totalFaltas').textContent = faltas;
+            document.getElementById('tasaAsistencia').textContent = `${tasa}%`;
+        }
+
+        async function agregarRegistro() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const departamento = document.getElementById('departamento').value;
+            const fecha = document.getElementById('fecha').value;
+
+            if (!nombre || !departamento || !fecha) {
+                mostrarMensaje('Por favor completa los campos requeridos (*)', 'error');
+                return;
+            }
+
+            const nuevoRegistro = {
+                nombre,
+                departamento,
+                fecha,
+                entrada: document.getElementById('entrada').value,
+                salida: document.getElementById('salida').value,
+                festivo: document.getElementById('festivo').value,
+                falta: document.getElementById('falta').value,
+                notas: document.getElementById('notas').value
+            };
+
+            try {
+                const res = await fetch(`${API}/api/registros`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nuevoRegistro)
+                });
+
+                if (res.ok) {
+                    mostrarMensaje('✅ Registro agregado correctamente', 'success');
+                    document.getElementById('nombre').value = '';
+                    document.getElementById('departamento').value = '';
+                    document.getElementById('entrada').value = '';
+                    document.getElementById('salida').value = '';
+                    document.getElementById('notas').value = '';
+                    cargarDatos();
+                }
+            } catch (error) {
+                mostrarMensaje(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function eliminarRegistro(id) {
+            if (!confirm('¿Deseas eliminar este registro?')) return;
+
+            try {
+                const res = await fetch(`${API}/api/registros/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    mostrarMensaje('✅ Registro eliminado', 'success');
+                    cargarDatos();
+                }
+            } catch (error) {
+                mostrarMensaje(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function exportarExcel() {
+            try {
+                const res = await fetch(`${API}/api/registros`);
+                const datos = await res.json();
+
+                if (datos.length === 0) {
+                    mostrarMensaje('No hay datos para exportar', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API}/api/export`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ datos })
+                });
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Asistencia_${new Date().toISOString().split('T')[0]}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                mostrarMensaje('✅ Excel descargado correctamente', 'success');
+            } catch (error) {
+                mostrarMensaje(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function mostrarMensaje(msg, tipo) {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.className = `message ${tipo}`;
+            setTimeout(() => {
+                el.className = 'message';
+            }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatos();
+            document.getElementById('fecha').valueAsDate = new Date();
+        });
+    </script>
+</body>
+</html>

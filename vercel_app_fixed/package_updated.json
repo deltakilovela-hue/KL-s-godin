@@ -1,0 +1,21 @@
+{
+  "name": "asistencia-ptdam",
+  "version": "1.1.0",
+  "description": "Gestor de asistencia PTDAM - Vercel Edition con OCR",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "node api/index.js",
+    "start": "node api/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "exceljs": "^4.3.0",
+    "body-parser": "^1.20.2",
+    "@google-cloud/vision": "^3.5.0"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}
