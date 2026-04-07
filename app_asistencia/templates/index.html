@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Asistencia - PTDAM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📋 Gestor de Asistencia PTDAM</h1>
+                <p>Procesa PDFs de listas de asistencia y exporta a Excel</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Section 1: Upload -->
+            <section class="section upload-section">
+                <h2>Paso 1: Subir PDF</h2>
+                <div class="upload-area" id="uploadArea">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="upload-text">Arrastra y suelta tu PDF aquí</p>
+                    <p class="upload-subtext">o</p>
+                    <button class="btn btn-primary" id="browseBtn">Seleccionar archivo</button>
+                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                </div>
+                <div id="uploadStatus" class="upload-status"></div>
+            </section>
+
+            <!-- Section 2: Data Preview & Edit -->
+            <section class="section data-section" id="dataSection" style="display: none;">
+                <h2>Paso 2: Revisar y Editar Datos</h2>
+
+                <div class="controls">
+                    <button class="btn btn-secondary" id="addRowBtn">➕ Agregar fila</button>
+                    <button class="btn btn-secondary" id="validateBtn">✓ Validar datos</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="data-table" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Departamento</th>
+                                <th>Fecha</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>¿Festivo?</th>
+                                <th>¿Falta?</th>
+                                <th>Fecha Falta</th>
+                                <th>Notas</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="validationResult" class="validation-result"></div>
+            </section>
+
+            <!-- Section 3: Export -->
+            <section class="section export-section" id="exportSection" style="display: none;">
+                <h2>Paso 3: Exportar a Excel</h2>
+                <button class="btn btn-success btn-large" id="exportBtn">
+                    📊 Descargar Excel
+                </button>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>App Asistencia PTDAM v1.0 | Desarrollado con ❤️</p>
+        </footer>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="spinner" id="spinner" style="display: none;">
+        <div class="spinner-content">
+            <div class="spinner-animation"></div>
+            <p>Procesando PDF...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
